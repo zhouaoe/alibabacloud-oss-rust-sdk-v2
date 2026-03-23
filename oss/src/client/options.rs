@@ -1,0 +1,60 @@
+use std::rc::Rc;
+use std::time::Duration;
+
+use url::Url;
+
+use crate::credential::CredentialsProvider;
+use crate::log::Logger;
+use crate::retry::Retryer;
+use crate::signer::Signer;
+use crate::utils::BwTokenBuckets;
+use crate::{AuthMethodType, FeatureFlagsType, UrlStyleType};
+use crate::client::OssResponse;
+
+#[allow(clippy::type_complexity)]
+#[derive(Clone, Default)]
+pub struct ClientOptions {
+    pub product: String,
+    pub region: String,
+    pub endpoint: Option<Url>,
+    pub retry_max_attempts: Option<u32>,
+    pub retryer: Option<Rc<dyn Retryer>>,
+    pub signer: Option<Rc<dyn Signer>>,
+    pub credentials_provider: Option<Rc<dyn CredentialsProvider>>,
+    pub http_client: Option<reqwest::Client>,
+    pub response_handlers:
+        Vec<Rc<dyn Fn(&OssResponse) -> Result<(), Box<dyn std::error::Error + Send + Sync>>>>,
+    pub url_style: UrlStyleType,
+    pub feature_flags: FeatureFlagsType,
+    pub op_read_write_timeout: Option<Duration>,
+    pub auth_method: Option<AuthMethodType>,
+    pub additional_headers: Vec<String>,
+}
+
+pub fn op_read_write_timeout(value: Duration) -> impl Fn(&mut ClientOptions) {
+    move |client_options: &mut ClientOptions| {
+        client_options.op_read_write_timeout = Some(value);
+    }
+}
+
+#[derive(Clone, Default)]
+pub struct ClientInnerOptions {
+    pub bw_token_buckets: BwTokenBuckets,
+    pub clock_offset: Duration,
+    pub logger: Option<Rc<dyn Logger>>,
+    pub user_agent: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_op_read_write_timeout() {
+        let mut options = ClientOptions::default();
+        let timeout = Duration::from_secs(5);
+        let set_timeout = op_read_write_timeout(timeout);
+        set_timeout(&mut options);
+        assert_eq!(options.op_read_write_timeout.unwrap(), timeout);
+    }
+}

@@ -1,0 +1,9 @@
+{
+  "region": "cn-hangzhou",
+  "bucket": "xxxxx",
+  "version_bucket": "xxxxxxxxx"
+  "object": "xxxxxxxxx",
+  "access_key_id": "xxxxxxxxxxxx",
+  "access_key_secret": "xxxxxxxx"
+}
+

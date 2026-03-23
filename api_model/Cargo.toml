@@ -1,0 +1,18 @@
+[package]
+name = "alibabacloud-oss-sdk-rust-v2-api-model"
+description = "API Model for Rust SDK of Alibaba Cloud OSS Service V2"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.60.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0.36"
+syn = { version = "<2", features = ["full"] }
+
+[dev-dependencies]
+alibabacloud-oss-sdk-rust-v2 = { path = "../oss" }
+http = "1.1.0"
+serde = { version = "1.0.203", features = ["derive"] }
